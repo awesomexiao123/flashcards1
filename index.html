@@ -1,0 +1,143 @@
+<!DOCTYPE html> 
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>单词记忆卡片 - 例句版</title>
+<style>
+body {
+  font-family: Arial, sans-serif;
+  background: #f3f4f6;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  padding: 20px;
+}
+.card {
+  width: 200px;
+  height: 260px;
+  perspective: 1000px;
+  margin: 10px;
+}
+.inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  text-align: center;
+  transition: transform 0.6s;
+  transform-style: preserve-3d;
+  cursor: pointer;
+}
+.card.flipped .inner {
+  transform: rotateY(180deg);
+}
+.front, .back {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: 12px;
+  backface-visibility: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  font-size: 18px;
+  font-weight: bold;
+  padding: 10px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+.front {
+  background: #ffffff;
+  color: #1f2937;
+}
+.back {
+  background: #2563eb;
+  color: white;
+  transform: rotateY(180deg);
+}
+button.speak-btn {
+  margin-top: 10px;
+  background: #fbbf24;
+  border: none;
+  border-radius: 8px;
+  padding: 6px 10px;
+  font-size: 16px;
+  cursor: pointer;
+}
+button.speak-btn:hover {
+  background: #f59e0b;
+}
+.example {
+  font-size: 16px;
+  font-weight: normal;
+  margin: 8px 0;
+  text-align: center;
+}
+</style>
+</head>
+<body>
+
+<div id="container"></div>
+
+<script>
+// 单词列表，每个对象包括单词、例句
+const words = [
+  { 
+    word: "abiding", 
+    example: "I want to have an abiding friendship with you."
+  }
+];
+
+const container = document.getElementById('container');
+
+words.forEach(item => {
+  const card = document.createElement('div');
+  card.className = 'card';
+  card.innerHTML = `
+    <div class="inner">
+      <!-- 正面 -->
+      <div class="front">
+        <div>${item.word}</div>
+        <button class="speak-btn front-btn">🔊 Word</button>
+      </div>
+      <!-- 背面 -->
+      <div class="back">
+        <div class="example">${item.example}</div>
+        <button class="speak-btn back-btn">🔊 Sentence</button>
+      </div>
+    </div>
+  `;
+
+  // 前面读单词
+  const frontBtn = card.querySelector('.front-btn');
+  frontBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    playLocalAudio(item.word); // 播放单词音频
+  });
+
+  // 背面读例句
+  const backBtn = card.querySelector('.back-btn');
+  backBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    playLocalAudio(item.word + "_sentence"); // 播放例句音频
+  });
+
+  // 点击翻转
+  card.addEventListener('click', () => {
+    card.classList.toggle('flipped');
+  });
+
+  container.appendChild(card);
+});
+
+// 播放本地 mp3 音频
+function playLocalAudio(filename) {
+  const audio = new Audio(`audio/${filename}.mp3`);
+  audio.play().catch(err => {
+    console.error('音频加载失败:', err);
+  });
+}
+</script>
+
+</body>
+</html>
